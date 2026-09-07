@@ -49,6 +49,22 @@ class RegistryTest {
         assertEquals(RegisterResult.VALID, result);
     }
 
+    @Test
+    @DisplayName("Una persona con el mismo id de otra se rechaza con DUPLICATED")
+    void shouldRejectDuplicatedId() {
+        // Arrange: preparar los datos
+        Person person = new Person("Carlos", 1, 40, Gender.MALE, true);
+        Person person2 = new Person("Ana", 1, 30, Gender.FEMALE, true);
+
+        // Act: ejecutar las acciones que queremos probar
+        RegisterResult result = registry.registerVoter(person);
+        RegisterResult result2 = registry.registerVoter(person2);
+
+        // Assert: verificar los resultados esperados
+        assertEquals(RegisterResult.VALID, result);
+        assertEquals(RegisterResult.DUPLICATED, result2);
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {17, 0})
     @DisplayName("Una persona menor de edad se rechaza con UNDERAGE")
