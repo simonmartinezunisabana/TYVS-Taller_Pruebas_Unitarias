@@ -6,18 +6,11 @@ import java.util.HashSet;
 import edu.unisabana.tyvs.domain.model.Person;
 import edu.unisabana.tyvs.domain.model.RegisterResult;
 
-/**
- * PUNTO DE PARTIDA DEL TALLER - no es la solucion final.
- *
- * Esta clase es el estado del codigo al terminar la ITERACION 2 del README
- * (regla "persona muerta"). Las reglas que faltan son las que usted debe
- * construir con TDD (Red -> Green -> Refactor):
- *
- *   - id ya registrado antes -> DUPLICATED
- *
- * Escriba PRIMERO la prueba que falla, luego la implementacion minima.
- */
 public class Registry {
+
+    private static final int MIN_AGE = 0;
+    private static final int MAX_AGE = 120;
+    private static final int UNDERAGE_LIMIT = 18;
 
     private final Set<Integer> usedIds = new HashSet<>();
 
@@ -28,19 +21,18 @@ public class Registry {
         if (!p.isAlive()) {
             return RegisterResult.DEAD;
         }
-        if (p.getAge() < 0 || p.getAge() > 120) {
+        if (p.getAge() < MIN_AGE || p.getAge() > MAX_AGE) {
             return RegisterResult.INVALID_AGE;
         }
-        if (p.getAge() < 18) {
+        if (p.getAge() < UNDERAGE_LIMIT) {
             return RegisterResult.UNDERAGE;
         }
-        if(usedIds.contains(p.getId())) {
+        if (usedIds.contains(p.getId())) {
             return RegisterResult.DUPLICATED;
-        }else {
+        } else {
             usedIds.add(p.getId());
         }
 
-        // TODO iteracion 3 en adelante: validar duplicados.
         return RegisterResult.VALID;
     }
 }
