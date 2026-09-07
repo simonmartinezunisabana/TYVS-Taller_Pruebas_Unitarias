@@ -20,7 +20,7 @@ import edu.unisabana.tyvs.domain.model.RegisterResult;
 public class Registry {
 
     public RegisterResult registerVoter(Person p) {
-        if (p == null) {
+        if (p == null || p.getId() <= 0) {
             return RegisterResult.INVALID; // regla defensiva
         }
         if (!p.isAlive()) {
