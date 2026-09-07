@@ -50,6 +50,20 @@ class RegistryTest {
     }
 
     @ParameterizedTest
+    @ValueSource(ints = {17, 0})
+    @DisplayName("Una persona menor de edad se rechaza con UNDERAGE")
+    void shouldRejectWhenPersonIsUnderage(int age) {
+        // Arrange: preparar los datos (id y estado "vivo" fijos para aislar solo la regla de la edad)
+        Person person = new Person("Ana", 1, age, Gender.FEMALE, true);
+
+        // Act
+        RegisterResult result = registry.registerVoter(person);
+
+        // Assert
+        assertEquals(RegisterResult.UNDERAGE, result);
+    }
+
+    @ParameterizedTest
     @ValueSource(ints = {-1, 121, -100, 200})
     @DisplayName("Una edad negativa o mayor a 120 se rechaza con INVALID_AGE")
     void shouldRejectWhenAgeIsOutOfBiologicalRange(int age) {
