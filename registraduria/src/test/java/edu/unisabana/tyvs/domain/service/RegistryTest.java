@@ -7,6 +7,8 @@ import edu.unisabana.tyvs.domain.model.RegisterResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -58,6 +60,20 @@ class RegistryTest {
 
         // Assert: verificar el resultado esperado
         assertEquals(RegisterResult.DEAD, result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1, -100})
+    @DisplayName("Un id menor o igual a cero se rechaza con INVALID")
+    void shouldRejectWhenDocumentIsZeroOrNegative(int id) {
+        // Arrange: preparar los datos (edad y estado "vivo" fijos para aislar solo la regla del id)
+        Person person = new Person("Ana", id, 30, Gender.FEMALE, true);
+
+        // Act: ejecutar la accion que queremos probar
+        RegisterResult result = registry.registerVoter(person);
+
+        // Assert: verificar el resultado esperado
+        assertEquals(RegisterResult.INVALID, result);
     }
 
     @Test
