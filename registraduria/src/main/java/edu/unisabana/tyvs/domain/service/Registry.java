@@ -27,6 +27,9 @@ public class Registry {
         if (p.getAge() < 0 || p.getAge() > 120) {
             return RegisterResult.INVALID_AGE;
         }
+        if (p.getAge() < 18) {
+            return RegisterResult.UNDERAGE;
+        }
 
         // TODO iteracion 3 en adelante: validar edad y duplicados.
         return RegisterResult.VALID;
