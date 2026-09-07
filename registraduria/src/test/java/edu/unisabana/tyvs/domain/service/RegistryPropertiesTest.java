@@ -112,4 +112,51 @@ class RegistryPropertiesTest {
 
         org.junit.jupiter.api.Assertions.assertNotNull(resultado);
     }
+
+    /** R5: toda persona entre 0 y 17 años, viva y con id válido, se rechaza con UNDERAGE. */
+    @Property
+    void todoMenorDeEdadEsRechazado(
+            @ForAll("nombres") String nombre,
+            @ForAll @IntRange(min = 1, max = 100_000) int id,
+            @ForAll @IntRange(min = 0, max = 17) int edad,
+            @ForAll("generos") Gender genero) {
+
+        Person menor = new Person(nombre, id, edad, genero, true);
+
+        assertEquals(RegisterResult.UNDERAGE, new Registry().registerVoter(menor));
+    }
+
+    /** R7: todo adulto (18-120), vivo y con id válido (único por ser Registry nuevo), queda VALID. */
+    @Property
+    void todoAdultoValidoSeRegistra(
+            @ForAll("nombres") String nombre,
+            @ForAll @IntRange(min = 1, max = 100_000) int id,
+            @ForAll @IntRange(min = 18, max = 120) int edad,
+            @ForAll("generos") Gender genero) {
+
+        Person adulto = new Person(nombre, id, edad, genero, true);
+
+        assertEquals(RegisterResult.VALID, new Registry().registerVoter(adulto));
+    }
+
+    /**
+     * Invariante de partición: el resultado siempre es una de las constantes de
+     * RegisterResult. En Java el propio sistema de tipos ya lo garantiza (el
+     * método no puede devolver otra cosa), pero se deja explícito como
+     * documentación ejecutable de que la partición del dominio está completa.
+     */
+    @Property
+    void elResultadoSiempreEsUnValorDelEnum(
+            @ForAll("nombres") String nombre,
+            @ForAll int id,
+            @ForAll int edad,
+            @ForAll("generos") Gender genero,
+            @ForAll boolean viva) {
+
+        Person p = new Person(nombre, id, edad, genero, viva);
+        RegisterResult resultado = new Registry().registerVoter(p);
+
+        org.junit.jupiter.api.Assertions.assertTrue(
+                java.util.Arrays.asList(RegisterResult.values()).contains(resultado));
+    }
 }
