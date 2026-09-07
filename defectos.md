@@ -1,6 +1,6 @@
 # Registro de Defectos — Taller de Pruebas Unitarias (Registraduría)
 
-Defectos encontrados durante el desarrollo TDD de `Registry.registerVoter`, en el orden en que aparecieron.
+Defectos encontrados durante el desarrollo TDD de `Registry.registerVoter`, en el orden en que aparecieron (cada uno corresponde a un ciclo RED del taller).
 
 ---
 
@@ -41,6 +41,16 @@ Defectos encontrados durante el desarrollo TDD de `Registry.registerVoter`, en e
 - **Resultado obtenido**: ambas → `VALID`.
 - **Causa probable**: `Registry` no tenía memoria de los `id` ya registrados (no había estado de instancia).
 - **Estado**: Resuelto — corregido agregando `Set<Integer> usedIds`, verificado con `shouldRejectDuplicatedId`.
+
+---
+
+### Defecto 05
+- **Caso de prueba**: Mutantes de PIT sobre `Person.getName()` y `Person.getGender()`.
+- **Entrada**: cualquier `Person` construida en las pruebas de `Registry`.
+- **Resultado esperado**: cambiar el retorno de esos getters (por `""` o `null`) debería hacer fallar alguna prueba.
+- **Resultado obtenido**: ninguna prueba fallaba (mutantes sin cubrir / `NO_COVERAGE`).
+- **Causa probable**: `Registry.registerVoter` nunca lee `getName()` ni `getGender()` (no son parte de ninguna regla de negocio R1–R7), así que ninguna prueba del dominio los ejercitaba.
+- **Estado**: Resuelto — se agregó `PersonTest` para verificar esos getters directamente sobre el modelo, en vez de forzar a `RegistryTest` a depender de datos que no le corresponden.
 
 ---
 
