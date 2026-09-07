@@ -25,6 +25,9 @@ public class Registry {
         if (!p.isAlive()) {
             return RegisterResult.DEAD;
         }
+        if (p.getAge() < 0 || p.getAge() > 120) {
+            return RegisterResult.INVALID_AGE;
+        }
 
         // TODO iteracion 3 en adelante: validar edad y duplicados.
         return RegisterResult.VALID;
