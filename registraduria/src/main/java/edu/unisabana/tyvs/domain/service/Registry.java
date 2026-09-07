@@ -10,7 +10,6 @@ import edu.unisabana.tyvs.domain.model.RegisterResult;
  * (regla "persona muerta"). Las reglas que faltan son las que usted debe
  * construir con TDD (Red -> Green -> Refactor):
  *
- *   - id <= 0                -> INVALID
  *   - edad < 0 o edad > 120  -> INVALID_AGE
  *   - 0 <= edad < 18         -> UNDERAGE
  *   - id ya registrado antes -> DUPLICATED
@@ -26,8 +25,8 @@ public class Registry {
         if (!p.isAlive()) {
             return RegisterResult.DEAD;
         }
-        // Implementacion minima para pasar las pruebas de la iteracion 2.
-        // TODO iteracion 3 en adelante: validar id, edad y duplicados.
+
+        // TODO iteracion 3 en adelante: validar edad y duplicados.
         return RegisterResult.VALID;
     }
 }
