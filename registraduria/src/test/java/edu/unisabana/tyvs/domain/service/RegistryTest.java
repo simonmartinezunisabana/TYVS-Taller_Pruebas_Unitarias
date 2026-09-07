@@ -49,6 +49,20 @@ class RegistryTest {
         assertEquals(RegisterResult.VALID, result);
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 121, -100, 200})
+    @DisplayName("Una edad negativa o mayor a 120 se rechaza con INVALID_AGE")
+    void shouldRejectWhenAgeIsOutOfBiologicalRange(int age) {
+        // Arrange: preparar los datos (id y estado "vivo" fijos para aislar solo la regla de la edad)
+        Person person = new Person("Ana", 1, age, Gender.FEMALE, true);
+
+        // Act: ejecutar la accion que queremos probar
+        RegisterResult result = registry.registerVoter(person);
+
+        // Assert: verificar el resultado esperado
+        assertEquals(RegisterResult.INVALID_AGE, result);
+    }
+
     @Test
     @DisplayName("Una persona no viva se rechaza con DEAD")
     void shouldRejectDeadPerson() {
