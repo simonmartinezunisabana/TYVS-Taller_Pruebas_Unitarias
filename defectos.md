@@ -1,78 +1,52 @@
-# Registro de Defectos — EJEMPLO RESUELTO
+# Registro de Defectos — Taller de Pruebas Unitarias (Registraduría)
 
-> ℹ️ **Este archivo es un ejemplo del profesor**, no su entrega. Muestra el nivel de detalle y los dos formatos aceptados.
-> Para su taller, parta de [`defectos_template.md`](defectos_template.md) y documente los defectos que **usted** encuentre al ejecutar sus propias pruebas.
-
-Este documento recopila los defectos encontrados durante la ejecución de pruebas unitarias del proyecto **Registraduría**.
-Cada defecto debe documentarse claramente para facilitar su análisis y corrección.
-
-Los defectos de abajo se detectaron sobre el estado del código **al terminar la iteración 1** del README (cuando `registerVoter` aún devolvía `VALID` para cualquier entrada).
+Defectos encontrados durante el desarrollo TDD de `Registry.registerVoter`, en el orden en que aparecieron.
 
 ---
 
-## Formato 1: Lista detallada (narrativa)
-
 ### Defecto 01
-
-- **Caso de prueba**: Persona con edad -1 (edad inválida).
-- **Entrada**: `Person(name="Juan", id=101, age=-1, gender=MALE, alive=true)`
-- **Resultado esperado**: `INVALID_AGE`
+- **Caso de prueba**: Documento inválido (`id <= 0`).
+- **Entrada**: `Person(name="Ana", id=0/-1/-100, age=30, gender=FEMALE, alive=true)`
+- **Resultado esperado**: `INVALID`
 - **Resultado obtenido**: `VALID`
-- **Causa probable**: Falta de validación de edad negativa en `Registry.registerVoter`.
-- **Estado**: Abierto
+- **Causa probable**: `Registry` no validaba el número de documento antes de aceptar el registro.
+- **Estado**: Resuelto — corregido agregando `p.getId() <= 0` a la guarda de `INVALID`, verificado con `shouldRejectWhenDocumentIsZeroOrNegative`.
 
 ---
 
 ### Defecto 02
-
-- **Caso de prueba**: Persona muerta.
-- **Entrada**: `Person(name="Ana", id=102, age=45, gender=FEMALE, alive=false)`
-- **Resultado esperado**: `DEAD`
+- **Caso de prueba**: Edad fuera del rango biológico posible.
+- **Entrada**: `Person(name="Ana", id=1, age=-1/121/-100/200, gender=FEMALE, alive=true)`
+- **Resultado esperado**: `INVALID_AGE`
 - **Resultado obtenido**: `VALID`
-- **Causa probable**: No se evalúa la condición `alive=false`.
-- **Estado**: **Resuelto** — corregido en la iteración 2 (`if (!p.isAlive()) return RegisterResult.DEAD;`) y verificado con la prueba `shouldRejectDeadPerson`.
+- **Causa probable**: No existía validación del rango `0 <= edad <= 120`.
+- **Estado**: Resuelto — corregido con la guarda de `INVALID_AGE` usando las constantes `MIN_AGE`/`MAX_AGE`, verificado con `shouldRejectWhenAgeIsOutOfBiologicalRange`.
 
 ---
 
 ### Defecto 03
-
-- **Caso de prueba**: Registro duplicado con el mismo `id`.
-- **Entradas**:
-  - Persona 1: `Person(name="Carlos", id=200, age=30, gender=MALE, alive=true)`
-  - Persona 2: `Person(name="Carla", id=200, age=25, gender=FEMALE, alive=true)`
-- **Resultado esperado**:
-  - Persona 1 → `VALID`
-  - Persona 2 → `DUPLICATED`
-- **Resultado obtenido**:
-  - Persona 1 → `VALID`
-  - Persona 2 → `VALID`
-- **Causa probable**: No hay verificación de `id` previamente registrado.
-- **Estado**: Abierto
+- **Caso de prueba**: Persona menor de edad.
+- **Entrada**: `Person(name="Ana", id=1, age=0/17, gender=FEMALE, alive=true)`
+- **Resultado esperado**: `UNDERAGE`
+- **Resultado obtenido**: `VALID`
+- **Causa probable**: No se evaluaba la mayoría de edad (`edad < 18`).
+- **Estado**: Resuelto — corregido con la guarda de `UNDERAGE`, verificado con `shouldRejectWhenPersonIsUnderage`.
 
 ---
 
-## Formato 2: Tabla de defectos (bug tracking)
-
-| ID | Caso de Prueba | Entrada | Resultado Esperado | Resultado Obtenido | Causa Probable | Estado |
-|-----|---------------------|---------|--------------------|--------------------|----------------|--------|
-| 01 | Edad inválida | `Person(id=101, age=-1, alive=true)` | `INVALID_AGE` | `VALID` | No se valida edad negativa | Abierto |
-| 02 | Persona muerta | `Person(id=102, age=45, alive=false)` | `DEAD` | `VALID` | No se evalúa condición `alive=false` | Resuelto (iteración 2) |
-| 03 | Registro duplicado | `Person(id=200, age=30, alive=true)` + `Person(id=200, age=25, alive=true)` | 1º → `VALID` 2º → `DUPLICATED` | 1º → `VALID` 2º → `VALID` | No hay verificación de `id` duplicado | Abierto |
+### Defecto 04
+- **Caso de prueba**: Registro duplicado con el mismo `id`.
+- **Entradas**: `Person(name="Carlos", id=1, age=40, alive=true)` seguido de `Person(name="Ana", id=1, age=30, alive=true)`.
+- **Resultado esperado**: 1ª → `VALID`, 2ª → `DUPLICATED`.
+- **Resultado obtenido**: ambas → `VALID`.
+- **Causa probable**: `Registry` no tenía memoria de los `id` ya registrados (no había estado de instancia).
+- **Estado**: Resuelto — corregido agregando `Set<Integer> usedIds`, verificado con `shouldRejectDuplicatedId`.
 
 ---
 
 ## Convenciones de Estado
-
 | Estado | Significado |
 |---------|-------------|
 | **Abierto** | El defecto fue detectado pero no corregido. |
 | **En progreso** | El defecto se encuentra en análisis o corrección. |
 | **Resuelto** | El defecto fue corregido y validado mediante pruebas. |
-
----
-
-## Observaciones
-
-- Se pueden usar **ambos formatos** o elegir uno como estándar de equipo.
-- El objetivo es **gestionar la calidad del software** y **demostrar un proceso sistemático de testing**.
-- Mantener este archivo actualizado durante todo el ciclo de desarrollo.
