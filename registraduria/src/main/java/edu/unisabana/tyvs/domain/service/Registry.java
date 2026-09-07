@@ -10,7 +10,6 @@ import edu.unisabana.tyvs.domain.model.RegisterResult;
  * (regla "persona muerta"). Las reglas que faltan son las que usted debe
  * construir con TDD (Red -> Green -> Refactor):
  *
- *   - edad < 0 o edad > 120  -> INVALID_AGE
  *   - 0 <= edad < 18         -> UNDERAGE
  *   - id ya registrado antes -> DUPLICATED
  *
